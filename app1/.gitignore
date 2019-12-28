@@ -1,0 +1,21 @@
+### F# ###
+lib/debug
+lib/release
+Debug
+*.suo
+*.user
+obj
+bin
+
+### Linux ###
+*~
+
+### vsc ###
+.ionide/
+
+### json ###
+*.json-[0-9]
+*.json-[0-9][0-9]
+
+### data ###
+res-[0-9]*

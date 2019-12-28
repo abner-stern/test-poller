@@ -1,0 +1,112 @@
+{
+    "ignoreFiles": [
+        "assemblyinfo.*"
+    ],
+    "conventions": {
+        "naming": {
+            "interfaceNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny",
+                    "prefix": "I"
+                }
+            },
+            "exceptionNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "typeNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "recordFieldNames": {
+                "enabled": false,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "enumCasesNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "unionCasesNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "moduleNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "literalNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "namespaceNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "memberNames": {
+                "enabled": true,
+                "config": {
+                    "underscores": "AllowAny"
+                }
+            },
+            "parameterNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "CamelCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "measureTypeNames": {
+                "enabled": true,
+                "config": {
+                    "underscores": "AllowAny"
+                }
+            },
+            "activePatternNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "PascalCase",
+                    "underscores": "AllowAny"
+                }
+            },
+            "publicValuesNames": {
+                "enabled": true,
+                "config": {
+                    "underscores": "AllowAny"
+                }
+            },
+            "nonPublicValuesNames": {
+                "enabled": true,
+                "config": {
+                    "naming": "CamelCase",
+                    "underscores": "AllowAny"
+                }
+            }
+        }
+    }
+}
