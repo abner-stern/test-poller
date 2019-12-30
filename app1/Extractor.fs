@@ -54,9 +54,9 @@ let extract_time text =
     let m = Regex.Match(text, "at\s(\d\d:\d\d)")
     match m.Success with
         | true when m.Groups.Count > 1 ->
-            to_date_time m.Groups.[1].Value
+            m.Groups.[1].Value
         | _ ->
-            None
+            ""
 
 let extract_last_update_time text =
     let beginning = """(?is)<div\s[^<>]+last-updated\s[^<>]+>"""
@@ -65,7 +65,9 @@ let extract_last_update_time text =
     match part with
         | Some inner_text ->
             let m = Regex.Match(inner_text, """(?is)<time>(.*)</time>""")
-            extract_time m.Captures.[0].Value
+            m.Captures.[0].Value
+                |> extract_time
+                |> to_date_time
         | _ ->
             None
 
