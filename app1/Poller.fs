@@ -11,6 +11,7 @@ open System.Threading.Tasks
 open Extractor
 open Item
 open ItemContext
+open Alog
 open MeasureItem
 
 type Poller (log: ILogger<Poller>,
@@ -80,6 +81,7 @@ type Poller (log: ILogger<Poller>,
                     add_item_to_context_if_not_exists item
                     let result = "_db.MeasureItems.Add item"
                     let written = _db.SaveChanges()
+                    Alog.info(logger=_log, result=(result, written))
                     _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
                                          " store_result, item added: " + written.ToString() +
                                          ", result: " + result.ToString())

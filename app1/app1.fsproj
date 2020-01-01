@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Log.fs" />
     <Compile Include="Item.fs" />
     <Compile Include="MeasureItem.fs" />
     <Compile Include="ItemContext.fs" />
