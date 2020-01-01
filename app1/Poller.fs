@@ -11,6 +11,7 @@ open System.Threading.Tasks
 open Extractor
 open Item
 open ItemContext
+open MeasureItem
 
 type Poller (log: ILogger<Poller>,
              httpFactory: IHttpClientFactory,
@@ -50,13 +51,47 @@ type Poller (log: ILogger<Poller>,
     let build_ok_result temperature last_updated =
         match temperature, last_updated with
             | Some t, Some upd ->
-                "ok, t=" + t.ToString() + ", upd=" + upd.ToString()
-            | Some t, None ->
-                "ok, t=" + t.ToString() + ", upd=None"
-            | None, Some upd ->
-                "ok, t=None, upd=" + upd.ToString()
-            | None, None ->
-                "ok, t=None, upd=None"
+                Some {LastUpdated = upd; Temperature = t}
+            | _ ->
+                None
+
+    let add_item_to_context_if_not_exists item =
+        try
+            let result = _db.MeasureItems.Find item.LastUpdated
+            _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
+                                 " add_item_to_context_if_not_exists, already exists: "
+                                 + result.ToString())
+        with
+            | :? NullReferenceException as ex ->
+                let result = _db.MeasureItems.Add item
+                _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
+                                     " add_item_to_context_if_not_exists, added: "
+                                     + result.ToString())
+            | _ as ex ->
+                _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
+                                     " add_item_to_context_if_not_exists, exception: "
+                                     + ex.ToString())
+        ()
+
+    let store_result some_measure_item =
+        match some_measure_item with
+            | Some item ->
+                try
+                    add_item_to_context_if_not_exists item
+                    let result = "_db.MeasureItems.Add item"
+                    let written = _db.SaveChanges()
+                    _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
+                                         " store_result, item added: " + written.ToString() +
+                                         ", result: " + result.ToString())
+                    result.ToString()
+                with
+                    | _ as ex ->
+                        _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
+                                             " store_result, exception: "
+                                             + ex.ToString())
+                        ex.ToString()
+            | None ->
+                "store_result, none"
 
     let handle_ok_result (result: HttpResponseMessage) =
         match result.StatusCode with
@@ -68,8 +103,10 @@ type Poller (log: ILogger<Poller>,
                                              + " handle_ok_result, body length: "
                                              + text.Length.ToString())
                         let (temperature, last_updated) = extract text
-                        build_ok_result temperature last_updated
+                        let measure_item = build_ok_result temperature last_updated
+                        store_result measure_item
                     | Choice2Of2 exc ->
+                        _log.LogInformation ("handle_ok_result, exc: " + exc.ToString())
                         "exc, read body, " + exc.ToString ()
             | other -> "other: " + other.ToString ()
 
