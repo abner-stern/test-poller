@@ -79,21 +79,17 @@ type Poller (log: ILogger<Poller>,
             | Some item ->
                 try
                     add_item_to_context_if_not_exists item
-                    let result = "_db.MeasureItems.Add item"
                     let written = _db.SaveChanges()
-                    Alog.info(logger=_log, result=(result, written))
+                    Alog.info(logger=_log, result=written)
                     _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
-                                         " store_result, item added: " + written.ToString() +
-                                         ", result: " + result.ToString())
-                    result.ToString()
+                                         " store_result, item added: " + written.ToString())
                 with
                     | _ as ex ->
                         _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
                                              " store_result, exception: "
                                              + ex.ToString())
-                        ex.ToString()
             | None ->
-                "store_result, none"
+                ()
 
     let handle_ok_result (result: HttpResponseMessage) =
         match result.StatusCode with
@@ -101,16 +97,13 @@ type Poller (log: ILogger<Poller>,
                 let response_body = read_body result
                 match response_body with
                     | Choice1Of2 text ->
-                        _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
-                                             + " handle_ok_result, body length: "
-                                             + text.Length.ToString())
                         let (temperature, last_updated) = extract text
                         let measure_item = build_ok_result temperature last_updated
                         store_result measure_item
                     | Choice2Of2 exc ->
                         _log.LogInformation ("handle_ok_result, exc: " + exc.ToString())
-                        "exc, read body, " + exc.ToString ()
-            | other -> "other: " + other.ToString ()
+            | other ->
+                _log.LogInformation ("handle_ok_result, other status: " + other.ToString())
 
     let handle_exception_result exc =
         "exc: " + exc.ToString ()
@@ -119,12 +112,9 @@ type Poller (log: ILogger<Poller>,
         _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
                              + " do_one_step " + i.ToString())
         let resp = get_one_page httpFactory
-        _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
-                             + " do_one_step, fetched " + i.ToString())
         match resp with
             | Choice1Of2 result ->
-                let res = handle_ok_result result
-                _log.LogInformation ("ok result: " + res)
+                handle_ok_result result
             | Choice2Of2 exc ->
                 let res = handle_exception_result exc
                 _log.LogInformation ("exc result: " + res)
