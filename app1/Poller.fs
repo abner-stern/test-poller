@@ -79,7 +79,7 @@ type Poller (log: ILogger<Poller>,
             | Some item ->
                 try
                     add_item_to_context_if_not_exists item
-                    let written = _db.SaveChanges()
+                    let written = _db.SaveChanges() // can throw 'duplicate key' because of other thread
                     Alog.info(logger=_log, result=written)
                     _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
                                          " store_result, item added: " + written.ToString())
