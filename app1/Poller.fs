@@ -59,19 +59,13 @@ type Poller (log: ILogger<Poller>,
     let add_item_to_context_if_not_exists item =
         try
             let result = _db.MeasureItems.Find item.LastUpdated
-            _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
-                                 " add_item_to_context_if_not_exists, already exists: "
-                                 + result.ToString())
+            Alog.info(logger=_log, result="already exists, " + result.ToString())
         with
             | :? NullReferenceException as ex ->
                 let result = _db.MeasureItems.Add item
-                _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
-                                     " add_item_to_context_if_not_exists, added: "
-                                     + result.ToString())
+                Alog.info(logger=_log, result="added, " + result.ToString())
             | _ as ex ->
-                _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
-                                     " add_item_to_context_if_not_exists, exception: "
-                                     + ex.ToString())
+                Alog.info(logger=_log, result="exception, " + ex.ToString())
         ()
 
     let store_result some_measure_item =
@@ -80,14 +74,10 @@ type Poller (log: ILogger<Poller>,
                 try
                     add_item_to_context_if_not_exists item
                     let written = _db.SaveChanges() // can throw 'duplicate key' because of other thread
-                    Alog.info(logger=_log, result=written)
-                    _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
-                                         " store_result, item added: " + written.ToString())
+                    Alog.info(logger=_log, result="item added, " + written.ToString())
                 with
                     | _ as ex ->
-                        _log.LogInformation (DateTime.Now.TimeOfDay.ToString() +
-                                             " store_result, exception: "
-                                             + ex.ToString())
+                        Alog.info(logger=_log, result="exception, " + ex.ToString())
             | None ->
                 ()
 
