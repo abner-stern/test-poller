@@ -16,11 +16,13 @@ open MeasureItem
 
 type Poller (log: ILogger<Poller>,
              httpFactory: IHttpClientFactory,
+             lifetime: IHostApplicationLifetime,
              db: ItemContext) =
     inherit BackgroundService ()
 
     let _db = db
     let _httpFactory = httpFactory
+    let _lifetime = lifetime
     let _log = log
     let mutable _cnt = 0
 
@@ -132,6 +134,7 @@ type Poller (log: ILogger<Poller>,
         with
             | _ as ex ->
                 Alog.info(logger=_log, result="exception, " + ex.ToString())
+                _lifetime.StopApplication()
 
     override this.ExecuteAsync (cancellationToken: CancellationToken) =
         _log.LogInformation "Poller is starting"
