@@ -37,4 +37,5 @@ let main argv =
            .ConfigureServices(configure_services)
            .Build()
            .Run()
+    printfn "Stopping the app."
     0 // return an integer exit code

@@ -110,28 +110,17 @@ type Poller (log: ILogger<Poller>,
                 _log.LogInformation ("exc result: " + res)
 
     let rec do_work (cancellationToken: CancellationToken) =
-        _log.LogInformation (DateTime.Now.TimeOfDay.ToString() + " Poller do work start")
         _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
-                             + " do_work, db: " + _db.ToString())
+                             + " Poller do work start, cnt: "
+                             + _cnt.ToString())
         let cur_item = {Id = 0; UserId = _cnt; Name = "name " + _cnt.ToString()}
-        _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
-                             + " do_work, cur item: " + cur_item.ToString())
         let result = _db.Items.Add cur_item
         _db.SaveChanges() |> ignore
-        _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
-                             + " do_work, items added, result: " + result.ToString())
         let len = _db.items |> Seq.length
-        let len = 0
         match cancellationToken.IsCancellationRequested, _cnt with
             | _, 7 -> ()
             | true, _ -> ()
             | false, _ ->
-                _log.LogInformation (DateTime.Now.TimeOfDay.ToString()
-                                     + " Poller do work: " + _cnt.ToString()
-                                     + ", len: " + len.ToString()
-                                     + ", db: " + _db.ToString()
-                                     + ", items: " + _db.Items.ToString()
-                                     )
                 do_one_step _httpFactory _cnt |> ignore
                 _cnt <- _cnt + 1
                 Task.Delay(1000, cancellationToken).Wait()
