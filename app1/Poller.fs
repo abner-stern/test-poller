@@ -126,8 +126,15 @@ type Poller (log: ILogger<Poller>,
                 Task.Delay(1000, cancellationToken).Wait()
                 do_work cancellationToken
 
+    let run_poller cancellationToken =
+        try
+            do_work cancellationToken
+        with
+            | _ as ex ->
+                Alog.info(logger=_log, result="exception, " + ex.ToString())
+
     override this.ExecuteAsync (cancellationToken: CancellationToken) =
         _log.LogInformation "Poller is starting"
         cancellationToken.Register (System.Action on_stop) |> ignore
-        Task.Run (System.Action (fun () -> do_work cancellationToken))
+        Task.Run (System.Action (fun () -> run_poller cancellationToken))
 
